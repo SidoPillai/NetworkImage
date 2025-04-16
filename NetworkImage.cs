@@ -1,4 +1,6 @@
-﻿using System.Collections.Concurrent;
+﻿using SkiaSharp;
+using Svg.Skia;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Web;
 
@@ -35,7 +37,6 @@ namespace NetworkImageLibrary
 
         public static readonly BindableProperty TokenProperty =
             BindableProperty.Create(nameof(Token), typeof(string), typeof(NetworkImage), default(string));
-
 
         public static readonly BindableProperty RequestWidthProperty =
             BindableProperty.Create(nameof(RequestWidth), typeof(int), typeof(NetworkImage), 1600);
@@ -107,7 +108,15 @@ namespace NetworkImageLibrary
                     if (File.Exists(filePath))
                     {
                         Trace.WriteLine("Using cached thumbnail: " + filePath);
-                        networkImage.Source = ImageSource.FromFile(filePath);
+                        if (filePath.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+                        {
+                            networkImage.Source = await LoadSvgImageAsync(filePath);
+                        }
+                        else
+                        {
+                            networkImage.Source = ImageSource.FromFile(filePath);
+                        }
+                        //networkImage.Source = ImageSource.FromFile(filePath);
                         return;
                     }
                 }
@@ -123,16 +132,31 @@ namespace NetworkImageLibrary
                     await Task.Delay(400);
                 }
 
-                // Load high-res image
-                var imageSource = await networkImage.GetImageSourceAsync(url, false);
-                networkImage.Source = imageSource;
+                // Load high-res image     
+
+                // check if url is svg 
+                if (url.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+                {
+                    networkImage.Source = await LoadSvgImageAsync(url);
+                    return;
+                }
+
+                networkImage.Source = await networkImage.GetImageSourceAsync(url, false);
+                return;
             }
             else
             {
                 // Check if URL is a local file
                 if (File.Exists(url))
                 {
-                    networkImage.Source = ImageSource.FromFile(url);
+                    if (url.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+                    {
+                        networkImage.Source =  await LoadSvgImageAsync(url);
+                    }
+                    else
+                    {
+                        networkImage.Source = ImageSource.FromFile(url);
+                    }
                     return;
                 }
 
@@ -140,12 +164,28 @@ namespace NetworkImageLibrary
                 if (url.StartsWith("resource://"))
                 {
                     var resourcePath = url.Replace("resource://", "");
-                    networkImage.Source = ImageSource.FromResource(resourcePath);
+                    if (url.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+                    {
+                        networkImage.Source = await LoadSvgImageAsync(resourcePath);
+                    }
+                    else
+                    {
+                        networkImage.Source = ImageSource.FromResource(resourcePath);
+                    }
+                    //networkImage.Source = ImageSource.FromResource(resourcePath);
                     return;
                 }
 
                 // Default to loading as a local file if no other conditions are met
-                networkImage.Source = ImageSource.FromFile(url);
+                if (url.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+                {
+                    networkImage.Source = await LoadSvgImageAsync(url);
+                }
+                else
+                {
+                    networkImage.Source = ImageSource.FromFile(url);
+                }
+                //networkImage.Source = ImageSource.FromFile(url);
             }
         }
 
@@ -170,7 +210,15 @@ namespace NetworkImageLibrary
             if (File.Exists(filePath))
             {
                 Trace.WriteLine("Using cached image: " + filePath);
-                return ImageSource.FromFile(filePath);
+                if (filePath.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+                {
+                    return await LoadSvgImageAsync(filePath);
+                }
+                else
+                {
+                    return ImageSource.FromFile(filePath);
+                }
+                //return ImageSource.FromFile(filePath);
             }
 
             // If not cached, download the image
@@ -218,6 +266,10 @@ namespace NetworkImageLibrary
                         }
 
                         Trace.WriteLine("Image downloaded and cached: " + filePath);
+                        if (filePath.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return await LoadSvgImageAsync(filePath);
+                        }
                         return ImageSource.FromFile(filePath);
                     }
                     else
@@ -236,6 +288,85 @@ namespace NetworkImageLibrary
             if (!string.IsNullOrEmpty(PlaceholderImageUrl))
             {
                 return ImageSource.FromFile(PlaceholderImageUrl);
+            }
+
+            return null;
+        }
+
+        private static async Task<ImageSource> LoadSvgImageAsync(string url)
+        {
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    var response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // invoke convertsvg to imagesource
+                        var svgData = await response.Content.ReadAsByteArrayAsync();
+                        var imageSource = ConvertSvgToImageSource(svgData);
+                        return imageSource;
+                    }
+                    else
+                    {
+                        Trace.WriteLine($"Failed to load SVG image. Status code: {response.StatusCode}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"Exception occurred while loading SVG image: {ex.Message}");
+            }
+
+            return null;
+        }
+
+        private static ImageSource ConvertSvgToImageSource(byte[] svgData, int imageWidth = 200, int imageHeight = 200)
+        {
+            try
+            {
+                using (MemoryStream stream = new MemoryStream(svgData))
+                {
+                    SKSvg svg = new SKSvg();
+                    svg.Load(stream);
+
+                    SKBitmap bitmap = new SKBitmap(imageWidth, imageHeight);
+
+                    SKImageInfo imageInfo = new SKImageInfo(bitmap.Width, bitmap.Height);
+
+                    using (var surface = SKSurface.Create(imageInfo))
+                    {
+                        SKCanvas canvas = surface.Canvas;
+
+                        canvas.Clear(SKColor.Empty);
+
+                        canvas.Translate(imageInfo.Width / 2f, imageInfo.Height / 2f);
+
+                        SKRect bounds = svg.Picture.CullRect;
+                        float xRatio = imageInfo.Width / bounds.Width;
+                        float yRatio = imageInfo.Height / bounds.Height;
+                        float ratio = Math.Min(xRatio, yRatio);
+
+                        canvas.Scale(ratio);
+                        canvas.Translate(-bounds.MidX, -bounds.MidY);
+
+                        canvas.DrawPicture(svg.Picture);
+                        surface.Canvas.Flush();
+
+                        var image = surface.Snapshot();
+                        bitmap = SKBitmap.FromImage(image);
+                        var data = bitmap.Encode(SKEncodedImageFormat.Png, 100);
+
+                        var imageStream = new MemoryStream(data.ToArray());
+                        var imageSource = ImageSource.FromStream(() => imageStream);
+
+                        return imageSource;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"Exception occurred while converting SVG to ImageSource: {ex.Message}");
             }
 
             return null;
