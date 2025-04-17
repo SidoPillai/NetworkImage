@@ -3,13 +3,13 @@
     x:Class="NetworkImage.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:NetworkImage"
-    Shell.FlyoutBehavior="Flyout"
+    xmlns:local="clr-namespace:NetworkImageLibrary"
+    Shell.FlyoutBehavior="Disabled"
     Title="NetworkImage">
 
     <ShellContent
         Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
+        ContentTemplate="{DataTemplate local:ImageLoaderPage}"
         Route="MainPage" />
 
 </Shell>

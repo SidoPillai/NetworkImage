@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:NetworkImageLibrary"
-             x:Class="NetworkImage.MainPage">
+             xmlns:image="clr-namespace:NetworkImageLibrary"
+             x:Class="NetworkImageLibrary.MainPage">
 
     <ScrollView>
         <VerticalStackLayout
@@ -12,62 +12,65 @@
             <Label Text="PNG" Style="{StaticResource Headline}" SemanticProperties.HeadingLevel="Level1" />
             
             <!-- PNG -->
-            <local:NetworkImage Url="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"/>
+            <image:NetworkImage Url="https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png"/>
 
             <Label Text="JPG" Style="{StaticResource Headline}" SemanticProperties.HeadingLevel="Level1" />
   
             <!-- JPG -->
-            <local:NetworkImage Url="https://picsum.photos/200/300.jpg"/>
+            <image:NetworkImage Url="https://picsum.photos/200/300.jpg"/>
 
             <Label Text="WEBP" Style="{StaticResource Headline}" SemanticProperties.HeadingLevel="Level1" />
             
             <!-- WEBP -->
-            <local:NetworkImage Url="https://picsum.photos/200/300.webp"/>
+            <image:NetworkImage Url="https://picsum.photos/200/300.webp"/>
 
             <Label Text="SVG" Style="{StaticResource Headline}" SemanticProperties.HeadingLevel="Level1" />
             
             <!-- SVG -->
-            <local:NetworkImage Url="https://dev.w3.org/SVG/tools/svgweb/samples/svg-files/410.svg"/>
+            <image:NetworkImage Url="https://dev.w3.org/SVG/tools/svgweb/samples/svg-files/410.svg"/> 
 
             <Label Text="GIF" Style="{StaticResource Headline}" SemanticProperties.HeadingLevel="Level1" />
             
             <!--GIF -->
-            <local:NetworkImage Url="https://media.giphy.com/media/3o7aD2saq4v6Y1g5iI/giphy.gif"/>
+            <image:NetworkImage Url="https://media.giphy.com/media/3o7aD2saq4v6Y1g5iI/giphy.gif"/>
 
             <Label Text="GIPHY WEBP" Style="{StaticResource Headline}" SemanticProperties.HeadingLevel="Level1" />
             
             <!-- GIF.WEBP -->
-            <local:NetworkImage Url="https://media.giphy.com/media/3o7aD2saq4v6Y1g5iI/giphy.webp"/>
+            <image:NetworkImage Url="https://media.giphy.com/media/3o7aD2saq4v6Y1g5iI/giphy.webp"/>
 
             <Label Text="TIFF" Style="{StaticResource Headline}" SemanticProperties.HeadingLevel="Level1" />
             
             <!-- TIFF -->
-            <local:NetworkImage Url="https://people.math.sc.edu/Burkardt/data/tif/at3_1m4_01.tif"/>
+            <image:NetworkImage Url="https://people.math.sc.edu/Burkardt/data/tif/at3_1m4_01.tif"/>
 
             <Label Text="BMP" Style="{StaticResource Headline}" SemanticProperties.HeadingLevel="Level1" />
             
             <!-- BMP -->
-            <local:NetworkImage Url="https://people.math.sc.edu/Burkardt/data/bmp/blackbuck.bmp"/>
+            <!-- <local:NetworkImage Url="https://people.math.sc.edu/Burkardt/data/bmp/blackbuck.bmp"/> -->
 
             <Label Text="ICO" Style="{StaticResource Headline}" SemanticProperties.HeadingLevel="Level1" />
             
             <!-- ICO -->
-            <local:NetworkImage Url="https://www.learningcontainer.com/wp-content/uploads/2020/09/Ico-file-for-testing.ico"/>
+            <image:NetworkImage Url="https://www.learningcontainer.com/wp-content/uploads/2020/09/Ico-file-for-testing.ico"/>
 
             <Label Text="Resource Url with Token With Load Thumbnail" Style="{StaticResource Headline}" SemanticProperties.HeadingLevel="Level1" />
             
-            <local:NetworkImage
+            <!--
+            <image:NetworkImage
                 WidthRequest="400"
                 HeightRequest="400"
                 Token="3NKHt6i2urmWtqOuugvr9YL7jsJyBpbxO7NQ5als7dZBGdk_NfWg_nbT_FHPScHKptAA-Nc_yJ1MkDwLzdFz-pqDR-S0M4Q5e4Xtcs70XyKojH9lbofBUtqqSTM-Wj27urHHmXu_O2RCGAe6K8QJH5PZ813u0Voqgqh2Xafio60zDmGFCrZPKRSMNeKYug4pxyDaiaRozNvEvsgAV9VyqZg82Lf8QL53MoJc9B2lNQI"
                 Url="https://www.arcgis.com/sharing/rest/content/items/17535a3ac5194de8bcbc0a6dfaef2288/resources/4k2Zlxu8vhp7gh1JAjzBT.png"
                 RequestWidth="1000"
                 LoadThumbnail="True"
-                Aspect="AspectFit"/>
+                Aspect="AspectFit"/> -->
 
             <Label Text="Resource Url with Token With Load Thumbnail and Placeholder" Style="{StaticResource Headline}" SemanticProperties.HeadingLevel="Level1" />
-            
-            <local:NetworkImage
+
+
+            <!--
+            <image:NetworkImage
                 WidthRequest="100"
                 HeightRequest="100"
                 Token="3NKHt6i2urmWtqOuugvr9YL7jsJyBpbxO7NQ5als7dZBGdk_NfWg_nbT_FHPScHKptAA-Nc_yJ1MkDwLzdFz-pqDR-S0M4Q5e4Xtcs70XyKojH9lbofBUtqqSTM-Wj27urHHmXu_O2RCGAe6K8QJH5PZ813u0Voqgqh2Xafio60zDmGFCrZPKRSMNeKYug4pxyDaiaRozNvEvsgAV9VyqZg82Lf8QL53MoJc9B2lNQI"
@@ -75,23 +78,24 @@
                 RequestWidth="1000"
                 PlaceholderImageUrl="esri_logo.png"
                 LoadThumbnail="True"
-                Aspect="AspectFit"/>
+                Aspect="AspectFit"/> -->
 
             <Label Text="Resource Image" Style="{StaticResource Headline}" SemanticProperties.HeadingLevel="Level1" />
-            
-            <local:NetworkImage
+
+            <image:NetworkImage
                 HeightRequest="185"
                 Url="dotnet_bot.png"
                 LoadThumbnail="False"
                 Aspect="AspectFit"/>
 
             <Label Text="Local File Url" Style="{StaticResource Headline}" SemanticProperties.HeadingLevel="Level1" />
-            <local:NetworkImage
+
+            <image:NetworkImage
                 HeightRequest="185"
                 Url="C:\ArcGIS\NetworkImage\NetworkImage\Resources\Images\dotnet_bot.png"
                 LoadThumbnail="True"
                 Aspect="AspectFit"/>
-                        
+           
         </VerticalStackLayout>
     </ScrollView>
 

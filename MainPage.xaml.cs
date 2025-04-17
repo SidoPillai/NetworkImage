@@ -1,4 +1,4 @@
-﻿namespace NetworkImage
+﻿namespace NetworkImageLibrary
 {
     public partial class MainPage : ContentPage
     {

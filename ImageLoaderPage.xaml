@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NetworkImageLibrary.ImageLoaderPage"
+             xmlns:image="clr-namespace:NetworkImageLibrary"
+             Title="ImageLoaderPage">
+    <ScrollView>
+        <VerticalStackLayout
+        Padding="24, 24, 24, 8"        
+        Spacing="8">
+            <Label 
+            Text="Welcome to Image Loader"
+            Style="{StaticResource Headline}"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+
+            <Label Text="Enter URL" SemanticProperties.HeadingLevel="Level1" />
+            <Entry x:Name="UrlEntry" Placeholder="Enter URL" />
+            <HorizontalStackLayout>
+                <CheckBox x:Name="LoadThumbnailCheckBox" />
+                <Label Text="Load Thumbnail" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+            <Picker x:Name="CacheStrategyPicker" Title="Cache Strategy">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>None</x:String>
+                        <x:String>Disk</x:String>
+                        <x:String>Memory</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+            </Picker>
+            <Picker x:Name="AspectPicker" Title="Select Aspect">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>AspectFit</x:String>
+                        <x:String>AspectFill</x:String>
+                        <x:String>Fill</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+            </Picker>
+            <Label Text="Request Width" />
+            <Entry x:Name="RequestWidthEntry" Placeholder="Enter Request Width" />
+            <Label Text="Token" />
+            <Entry x:Name="TokenEntry" Placeholder="Enter Token" />
+            <Button Text="Load Image" Clicked="OnLoadImageClicked" />
+
+            <!-- Show the image once loaded after button click -->
+
+            <image:NetworkImage
+            x:Name="DynamicNetworkImage"            
+            LoadThumbnail="False"
+            Aspect="AspectFit"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
