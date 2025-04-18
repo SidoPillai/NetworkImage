@@ -87,21 +87,8 @@ namespace NetworkImageLibrary
             }
 
             var url = (string)newValue;
-
-
-            //if (newValue == null)
-            //{
-            //    Trace.WriteLine("New value is null in OnUrlChanged.");
-            //    ((NetworkImage)bindable).Source = ((NetworkImage)bindable).GetPlaceholderImage();
-            //    return;
-            //}
-            //if (oldValue == newValue)
-            //{
-            //    Trace.WriteLine("Old value is the same as new value in OnUrlChanged.");
-            //    return;
-            //}
-
-            //var url = (string)newValue;
+            var uriBuilder = new UriBuilder(url);
+            var path = uriBuilder.Path;
 
             try
             {
@@ -132,6 +119,12 @@ namespace NetworkImageLibrary
                     {
                         Trace.WriteLine("Based on cache strategy: " + networkImage.CacheStrategy);
                         Trace.WriteLine("Using image: " + url );
+                        // Check if file is gif format then set animated playing to true
+                        if (path.EndsWith(".gif", StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Set animated playing to true
+                            networkImage.IsAnimationPlaying = true;
+                        }
                         networkImage.Source = imageSource;
                     }
                     else
@@ -145,6 +138,12 @@ namespace NetworkImageLibrary
 
                         // If not in cache, load the image from the URL
                         networkImage.Source = networkImage.GetImageSourceAsync(url, false).Result;
+                        
+                        if (path.EndsWith(".gif", StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Set animated playing to true
+                            networkImage.IsAnimationPlaying = true;
+                        }
                     }
                 }
                 else
@@ -153,7 +152,13 @@ namespace NetworkImageLibrary
                     
                     var localImage = ImageUtil.GetImageSourceFromLocalFile(url);
                     if (localImage != null)
-                    {
+                    {                        
+                        // Check if file is gif format then set animated playing to true
+                        if (path.EndsWith(".gif", StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Set animated playing to true
+                            networkImage.IsAnimationPlaying  = true;
+                        }
                         networkImage.Source = localImage;
                         return;
                     }
