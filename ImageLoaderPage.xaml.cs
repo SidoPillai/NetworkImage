@@ -6,6 +6,7 @@ public partial class ImageLoaderPage : ContentPage
 {
     // Ensure these controls are defined in your XAML file and linked to the code-behind
     private Entry _urlEntry;
+    private Entry _placeholderEntry;
     private CheckBox _loadThumbnailCheckBox;
     private Picker _aspectPicker;
     private Picker _cacheStrategyPicker;
@@ -19,6 +20,7 @@ public partial class ImageLoaderPage : ContentPage
 
         // Initialize the controls if they are not automatically linked
         _urlEntry = this.FindByName<Entry>("UrlEntry");
+        _placeholderEntry = this.FindByName<Entry>("PlaceholderEntry");
         _loadThumbnailCheckBox = this.FindByName<CheckBox>("LoadThumbnailCheckBox");
         _aspectPicker = this.FindByName<Picker>("AspectPicker");
         _cacheStrategyPicker = this.FindByName<Picker>("CacheStrategyPicker");
@@ -31,6 +33,7 @@ public partial class ImageLoaderPage : ContentPage
     {
         // Existing code remains unchanged
         string url = _urlEntry.Text;
+        string placeholder = _placeholderEntry.Text;
         bool loadThumbnail = _loadThumbnailCheckBox.IsChecked;
 
         // CacheStrategy
@@ -52,9 +55,14 @@ public partial class ImageLoaderPage : ContentPage
         {
             requestWidth = parsedWidth;
         }
-        string token = _tokenEntry.Text;
+        
+        if (!string.IsNullOrEmpty(_tokenEntry.Text))
+        {
+            _dynamicNetworkImage.Token = _tokenEntry.Text;
+        }
 
         _dynamicNetworkImage.Url = url;
+        _dynamicNetworkImage.PlaceholderImageUrl = placeholder;
         _dynamicNetworkImage.CacheStrategy = cacheStrategy;
         _dynamicNetworkImage.LoadThumbnail = loadThumbnail;
         _dynamicNetworkImage.Aspect = aspect;
@@ -64,9 +72,6 @@ public partial class ImageLoaderPage : ContentPage
             _dynamicNetworkImage.WidthRequest = requestWidth;
         }
 
-        if (!string.IsNullOrEmpty(token))
-        {
-            _dynamicNetworkImage.Token = token;
-        }
+
     }
 }

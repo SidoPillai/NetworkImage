@@ -215,6 +215,7 @@ namespace NetworkImageLibrary
                 {
                     query["token"] = Token;
                 }
+
                 uriBuilder.Query = query.ToString();
                 var uri = uriBuilder.Uri;
 

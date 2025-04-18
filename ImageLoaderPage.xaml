@@ -16,6 +16,7 @@
 
             <Label Text="Enter URL" SemanticProperties.HeadingLevel="Level1" />
             <Entry x:Name="UrlEntry" Placeholder="Enter URL" />
+            <Entry x:Name="PlaceholderEntry" Placeholder="Enter Placeholder Image URL (local only)" />
             <HorizontalStackLayout>
                 <CheckBox x:Name="LoadThumbnailCheckBox" />
                 <Label Text="Load Thumbnail" VerticalOptions="Center" />
