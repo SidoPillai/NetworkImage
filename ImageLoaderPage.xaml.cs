@@ -61,7 +61,6 @@ public partial class ImageLoaderPage : ContentPage
             _dynamicNetworkImage.Token = _tokenEntry.Text;
         }
 
-        _dynamicNetworkImage.Url = url;
         _dynamicNetworkImage.PlaceholderImageUrl = placeholder;
         _dynamicNetworkImage.CacheStrategy = cacheStrategy;
         _dynamicNetworkImage.LoadThumbnail = loadThumbnail;
@@ -72,6 +71,7 @@ public partial class ImageLoaderPage : ContentPage
             _dynamicNetworkImage.WidthRequest = requestWidth;
         }
 
-
+        // Set the url last
+        _dynamicNetworkImage.Url = url;
     }
 }

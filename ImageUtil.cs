@@ -148,7 +148,8 @@ namespace NetworkImageLibrary
             else
             {
                 Trace.WriteLine($"File not found: {filePath}");
-                return ImageSource.FromFile(filePath);
+                return null;
+                //return ImageSource.FromFile(filePath); // this works for resources
             }
         }
     }

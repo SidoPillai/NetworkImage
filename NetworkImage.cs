@@ -75,20 +75,33 @@ namespace NetworkImageLibrary
                 Trace.WriteLine("BindableObject is null in OnUrlChanged.");
                 return;
             }
-            if (newValue == null)
+
+            var networkImage = (NetworkImage)bindable;
+
+            // Check if the new URL is null or empty
+            if (string.IsNullOrEmpty(newValue as string))
             {
-                Trace.WriteLine("New value is null in OnUrlChanged.");
-                ((NetworkImage)bindable).Source = ((NetworkImage)bindable).GetPlaceholderImage();
-                return;
-            }
-            if (oldValue == newValue)
-            {
-                Trace.WriteLine("Old value is the same as new value in OnUrlChanged.");
+                Trace.WriteLine("URL is null or empty in OnUrlChanged. Loading placeholder image.");
+                networkImage.Source = networkImage.GetPlaceholderImage();
                 return;
             }
 
-            var networkImage = (NetworkImage)bindable;
             var url = (string)newValue;
+
+
+            //if (newValue == null)
+            //{
+            //    Trace.WriteLine("New value is null in OnUrlChanged.");
+            //    ((NetworkImage)bindable).Source = ((NetworkImage)bindable).GetPlaceholderImage();
+            //    return;
+            //}
+            //if (oldValue == newValue)
+            //{
+            //    Trace.WriteLine("Old value is the same as new value in OnUrlChanged.");
+            //    return;
+            //}
+
+            //var url = (string)newValue;
 
             try
             {
@@ -119,22 +132,26 @@ namespace NetworkImageLibrary
                         Trace.WriteLine("Based on cache strategy: " + networkImage.CacheStrategy);
                         Trace.WriteLine("Using image: " + url );
                         networkImage.Source = imageSource;
-                        return;
                     }
                     else
                     {
                         Trace.WriteLine("Image not found in cache, loading from URL: " + url);
                         // If not in cache, load the image from the URL
                         networkImage.Source = networkImage.GetImageSourceAsync(url, networkImage.LoadThumbnail).Result;
-                        return;
                     }
                 }
                 else
                 {
                     Trace.WriteLine("Not a network url. loading from file");
                     
-                    // Load from local file
-                    networkImage.Source = ImageUtil.GetImageSourceFromLocalFile(url);
+                    var localImage = ImageUtil.GetImageSourceFromLocalFile(url);
+                    if (localImage != null)
+                    {
+                        networkImage.Source = localImage;
+                        return;
+                    }
+
+                    networkImage.Source = networkImage.GetPlaceholderImage();
                     return;
                 }
             }
@@ -142,7 +159,6 @@ namespace NetworkImageLibrary
             {
                 // Handle exceptions (e.g., log the error)
                 Console.WriteLine($"Error in OnUrlChanged: {ex.Message}");
-                networkImage.Source = networkImage.GetPlaceholderImage();
             }
         }
 
