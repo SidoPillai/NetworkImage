@@ -123,8 +123,9 @@ namespace NetworkImageLibrary
                     {
                         CacheStrategy.Memory => networkImage.GetImageFromMemCache(url),
                         CacheStrategy.Disk => networkImage.GetImageFromDiskCache(url).Result,
-                        CacheStrategy.None => networkImage.GetImageSourceAsync(url, networkImage.LoadThumbnail).Result,
-                        _ => throw new ArgumentOutOfRangeException(nameof(networkImage.CacheStrategy), $"Unexpected CacheStrategy value: {networkImage.CacheStrategy}")
+                        _ => null
+                        //CacheStrategy.None => networkImage.GetImageSourceAsync(url, networkImage.LoadThumbnail).Result,
+                        //_ => throw new ArgumentOutOfRangeException(nameof(networkImage.CacheStrategy), $"Unexpected CacheStrategy value: {networkImage.CacheStrategy}")
                     };
 
                     if (imageSource != null)
@@ -136,8 +137,14 @@ namespace NetworkImageLibrary
                     else
                     {
                         Trace.WriteLine("Image not found in cache, loading from URL: " + url);
+                        // load thumbnail if set
+                        if (networkImage.LoadThumbnail)
+                        {
+                            networkImage.Source = networkImage.GetImageSourceAsync(url, true).Result;                        
+                        }
+
                         // If not in cache, load the image from the URL
-                        networkImage.Source = networkImage.GetImageSourceAsync(url, networkImage.LoadThumbnail).Result;
+                        networkImage.Source = networkImage.GetImageSourceAsync(url, false).Result;
                     }
                 }
                 else
@@ -214,7 +221,12 @@ namespace NetworkImageLibrary
                 var uriBuilder = new UriBuilder(url);
                 var path = uriBuilder.Path;
                 var query = HttpUtility.ParseQueryString(uriBuilder.Query);
-                
+
+                if (!string.IsNullOrEmpty(Token))
+                {
+                    query["token"] = Token;
+                }
+
                 if (loadThumbnail)
                 {
                     query["w"] = "200";
@@ -225,11 +237,6 @@ namespace NetworkImageLibrary
                     {
                         query["w"] = RequestWidth.ToString();
                     }
-                }
-
-                if (!string.IsNullOrEmpty(Token))
-                {
-                    query["token"] = Token;
                 }
 
                 uriBuilder.Query = query.ToString();
